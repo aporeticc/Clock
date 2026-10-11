@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AFTERGLOW</title>
+    <meta
+      name="description"
+      content="AFTERGLOW is a calm, premium productivity workspace. Make space for what matters."
+    />
+    <meta name="theme-color" content="#11111B" />
+
+    <!-- Favicon drawn inline, so the project needs no image files. -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='4' y1='4' x2='28' y2='28' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%239277FF'/%3E%3Cstop offset='1' stop-color='%23FFA97B'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='%2311111B'/%3E%3Ccircle cx='16' cy='16' r='9.5' fill='none' stroke='url(%23g)' stroke-width='1.6'/%3E%3Cpath d='M10.5 18.5h11' stroke='url(%23g)' stroke-width='1.6' stroke-linecap='round'/%3E%3Cpath d='M12.5 18.5a3.5 3.5 0 0 1 7 0z' fill='url(%23g)'/%3E%3C/svg%3E"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+
+  <body>
+    <!-- Decorative background. Everything in here is purely visual. -->
+    <div class="background" aria-hidden="true">
+      <div class="background__orbs background__orbs--back"></div>
+      <div class="background__orbs background__orbs--front"></div>
+      <div class="background__ring background__ring--outer"></div>
+      <div class="background__ring background__ring--inner"></div>
+      <div class="background__vignette"></div>
+      <div class="background__grain"></div>
+    </div>
+
+    <div class="page">
+      <header class="site-header">
+        <div class="brand reveal" style="--reveal-order: 6">
+          <svg class="brand__mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <defs>
+              <linearGradient
+                id="brand-gradient"
+                x1="3"
+                y1="3"
+                x2="21"
+                y2="21"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop stop-color="#9277FF" />
+                <stop offset="1" stop-color="#FFA97B" />
+              </linearGradient>
+            </defs>
+            <circle cx="12" cy="12" r="10" stroke="url(#brand-gradient)" stroke-width="1.5" />
+            <path
+              d="M6.5 14.5h11"
+              stroke="url(#brand-gradient)"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <path d="M8.5 14.5a3.5 3.5 0 0 1 7 0z" fill="url(#brand-gradient)" />
+          </svg>
+          <span class="brand__name">AFTERGLOW</span>
+        </div>
+
+        <nav class="site-nav reveal" style="--reveal-order: 6" aria-label="Display options">
+          <button
+            class="icon-button"
+            id="fullscreen-toggle"
+            type="button"
+            data-state="enter"
+            aria-label="Enter full screen"
+            title="Enter full screen"
+            hidden
+          >
+            <svg
+              class="icon icon--enter"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path
+                d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"
+              />
+            </svg>
+            <svg
+              class="icon icon--exit"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path
+                d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"
+              />
+            </svg>
+          </button>
+
+          <button
+            class="icon-button"
+            id="theme-toggle"
+            type="button"
+            aria-label="Switch to light theme"
+            title="Switch to light theme"
+          >
+            <svg
+              class="icon icon--sun"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path
+                d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+              />
+            </svg>
+            <svg
+              class="icon icon--moon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          </button>
+        </nav>
+      </header>
+
+      <main class="hero">
+        <div class="hero__star reveal" style="--reveal-order: 0" aria-hidden="true">
+          <svg class="star" viewBox="0 0 24 24">
+            <path
+              d="M12 0c.8 7.2 4.8 11.2 12 12-7.2.8-11.2 4.8-12 12-.8-7.2-4.8-11.2-12-12C7.2 11.2 11.2 7.2 12 0z"
+              fill="currentColor"
+            />
+          </svg>
+        </div>
+
+        <h1 class="hero__greeting reveal" id="greeting" style="--reveal-order: 1">
+          Good day.
+        </h1>
+
+        <div class="hero__clock reveal" style="--reveal-order: 2">
+          <time class="clock" id="clock" datetime="00:00">
+            <span class="clock__digits" id="clock-hours">--</span>
+            <span class="clock__colon" aria-hidden="true"></span>
+            <span class="clock__digits" id="clock-minutes">--</span>
+          </time>
+        </div>
+
+        <time class="date reveal" id="date" style="--reveal-order: 3">
+          <span class="date__weekday" id="date-weekday">Today</span>
+          <span class="date__divider" aria-hidden="true"></span>
+          <span class="date__day-month" id="date-day-month">&mdash;</span>
+        </time>
+
+        <p class="hero__subtitle reveal" style="--reveal-order: 4">
+          Make space for what matters.
+        </p>
+      </main>
+    </div>
+  </body>
+</html>

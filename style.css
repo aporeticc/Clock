@@ -1,0 +1,747 @@
+/* ==========================================================================
+   AFTERGLOW — home screen styles
+   Sections: 1 Tokens · 2 Base · 3 Background · 4 Layout · 5 Header
+             6 Hero · 7 Entrance · 8 Responsive · 9 Reduced motion
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Design tokens
+   Colours live in custom properties so the theme toggle only has to swap
+   one block of values (the [data-theme="light"] rule further down).
+   -------------------------------------------------------------------------- */
+:root {
+  color-scheme: dark;
+
+  /* Type: a system stack, so no font files or external requests. */
+  --font-sans: system-ui, -apple-system, "Segoe UI Variable Display", "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Core palette (dark theme) */
+  --bg: #11111b;
+  --surface: #1d1c2b;
+  --accent: #9277ff;
+  --warm: #ffa97b;
+  --text: #f5f3ff;
+  --muted: #aaa7c2;
+
+  /* Colour channels, used where we need our own alpha: rgba(var(--x-rgb), .4) */
+  --violet-rgb: 146, 119, 255;
+  --indigo-rgb: 79, 70, 229;
+  --warm-rgb: 255, 169, 123;
+
+  /* Glass, borders and lines */
+  --glass: rgba(29, 28, 43, 0.55);
+  --glass-border: rgba(245, 243, 255, 0.09);
+  --glass-highlight: rgba(245, 243, 255, 0.06);
+  --glass-shadow: 0 10px 40px rgba(4, 4, 12, 0.35);
+  --line: rgba(245, 243, 255, 0.16);
+  --ring: rgba(245, 243, 255, 0.07);
+  --hover-fill: rgba(146, 119, 255, 0.18);
+
+  /* Clock digits fade from the text colour into a soft violet. */
+  --clock-top: #f5f3ff;
+  --clock-bottom: #bfb2ff;
+  --clock-glow: rgba(146, 119, 255, 0.4);
+
+  /* Background atmosphere */
+  --atmosphere-top: rgba(146, 119, 255, 0.16);
+  --atmosphere-bottom: rgba(255, 169, 123, 0.13);
+  --orb-violet: 0.85;
+  --orb-indigo: 0.66;
+  --orb-warm: 0.8;
+  --orb-halo: 0.3;
+  --vignette: rgba(4, 4, 12, 0.5);
+  --grain-opacity: 0.09;
+
+  /* The little star changes colour with the time of day. */
+  --star-morning: #ffc29b;
+  --star-day: #ffa97b;
+  --star-evening: #9277ff;
+
+  /* White speckles for the dark theme. This is an SVG noise filter written
+     directly inside the CSS, so there is no image file to load. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.5 -0.45'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  /* Time-of-day mood. JavaScript sets data-period on <body>; these two
+     values tilt the lighting a little warmer or cooler. */
+  --warm-strength: 1;
+  --cool-strength: 1;
+}
+
+/* Light theme: the same layout, lit by daybreak instead of midnight. */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f5f2ff;
+  --surface: #ffffff;
+  --accent: #6b4ef2;
+  --warm: #ff8b55;
+  --text: #1b1833;
+  --muted: #5d5979;
+
+  --glass: rgba(255, 255, 255, 0.58);
+  --glass-border: rgba(60, 40, 140, 0.12);
+  --glass-highlight: rgba(255, 255, 255, 0.7);
+  --glass-shadow: 0 10px 40px rgba(80, 60, 170, 0.14);
+  --line: rgba(27, 24, 51, 0.2);
+  --ring: rgba(60, 40, 140, 0.11);
+  --hover-fill: rgba(107, 78, 242, 0.12);
+
+  --clock-top: #1b1833;
+  --clock-bottom: #5a40e0;
+  --clock-glow: rgba(146, 119, 255, 0.28);
+
+  --atmosphere-top: rgba(146, 119, 255, 0.2);
+  --atmosphere-bottom: rgba(255, 169, 123, 0.22);
+  --orb-violet: 0.5;
+  --orb-indigo: 0.3;
+  --orb-warm: 0.62;
+  --orb-halo: 0.34;
+
+  --star-morning: #f0802f;
+  --star-day: #f26a2e;
+  --star-evening: #6b4ef2;
+  --vignette: rgba(110, 90, 200, 0.14);
+  --grain-opacity: 0.07;
+
+  /* Dark speckles for the light theme. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.25 0 0 0 1.5 -0.45'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Time-of-day lighting. Morning is warm, evening hands over to violet. */
+body[data-period="morning"] {
+  --warm-strength: 1.15;
+  --cool-strength: 0.8;
+}
+body[data-period="afternoon"] {
+  --warm-strength: 0.9;
+  --cool-strength: 0.95;
+}
+body[data-period="evening"] {
+  --warm-strength: 0.7;
+  --cool-strength: 1.15;
+}
+
+/* --------------------------------------------------------------------------
+   2. Base
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* The hidden attribute must win over any display value set below. */
+[hidden] {
+  display: none !important;
+}
+
+html {
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow-x: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   3. Cinematic background
+   Four soft orbs drift slowly behind everything. Each orb is a ::before or
+   ::after pseudo-element filled with a radial gradient.
+   -------------------------------------------------------------------------- */
+.background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(90rem 48rem at 50% -12%, var(--atmosphere-top), transparent 62%),
+    radial-gradient(80rem 40rem at 50% 118%, var(--atmosphere-bottom), transparent 62%);
+}
+
+.background__orbs {
+  position: absolute;
+  inset: 0;
+}
+
+.background__orbs::before,
+.background__orbs::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(36px);
+  will-change: transform;
+}
+
+.is-ready .background__orbs::before,
+.is-ready .background__orbs::after {
+  transition: opacity 3s ease;
+}
+
+/* Violet orb: upper left */
+.background__orbs--back::before {
+  width: 72vmax;
+  height: 72vmax;
+  left: -24vmax;
+  top: -30vmax;
+  background: radial-gradient(
+    circle,
+    rgba(var(--violet-rgb), 1) 0%,
+    rgba(var(--violet-rgb), 0.38) 38%,
+    rgba(var(--violet-rgb), 0) 68%
+  );
+  opacity: calc(var(--orb-violet) * var(--cool-strength));
+  animation: drift-one 44s ease-in-out infinite alternate;
+}
+
+/* Indigo orb: upper right, deeper and cooler */
+.background__orbs--back::after {
+  width: 66vmax;
+  height: 66vmax;
+  right: -26vmax;
+  top: -14vmax;
+  background: radial-gradient(
+    circle,
+    rgba(var(--indigo-rgb), 1) 0%,
+    rgba(var(--indigo-rgb), 0.34) 40%,
+    rgba(var(--indigo-rgb), 0) 68%
+  );
+  opacity: calc(var(--orb-indigo) * var(--cool-strength));
+  animation: drift-two 56s ease-in-out infinite alternate;
+}
+
+/* Warm orb: low on the right, like light left behind after sunset */
+.background__orbs--front::before {
+  width: 70vmax;
+  height: 70vmax;
+  right: -12vmax;
+  bottom: -38vmax;
+  background: radial-gradient(
+    circle,
+    rgba(var(--warm-rgb), 1) 0%,
+    rgba(var(--warm-rgb), 0.36) 40%,
+    rgba(var(--warm-rgb), 0) 68%
+  );
+  opacity: calc(var(--orb-warm) * var(--warm-strength));
+  animation: drift-three 62s ease-in-out infinite alternate;
+}
+
+/* Halo: a quiet light source sitting just behind the clock */
+.background__orbs--front::after {
+  width: 52vmax;
+  height: 52vmax;
+  left: 50%;
+  top: 46%;
+  margin: -26vmax 0 0 -26vmax;
+  background: radial-gradient(
+    circle,
+    rgba(var(--violet-rgb), 1) 0%,
+    rgba(var(--violet-rgb), 0.3) 36%,
+    rgba(var(--violet-rgb), 0) 66%
+  );
+  opacity: calc(var(--orb-halo) * var(--cool-strength));
+  animation: breathe 18s ease-in-out infinite alternate;
+}
+
+/* Two delicate rings frame the clock like an orbit. */
+.background__ring {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  border: 1px solid var(--ring);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 28%, #000 72%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 28%, #000 72%, transparent 100%);
+}
+
+.background__ring--inner {
+  width: min(58vmin, 44rem);
+  height: min(58vmin, 44rem);
+}
+
+.background__ring--outer {
+  width: min(94vmin, 72rem);
+  height: min(94vmin, 72rem);
+}
+
+/* Darkens (or, in light theme, tints) the corners so the centre glows. */
+.background__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 46%, transparent 42%, var(--vignette) 100%);
+}
+
+/* Fine film grain. It also hides banding in the big gradients. */
+.background__grain {
+  position: absolute;
+  inset: 0;
+  background-image: var(--grain);
+  background-size: 180px 180px;
+  opacity: var(--grain-opacity);
+}
+
+@keyframes drift-one {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(9vmax, 7vmax, 0) scale(1.14);
+  }
+}
+
+@keyframes drift-two {
+  from {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  to {
+    transform: translate3d(-8vmax, 10vmax, 0) scale(0.92);
+  }
+}
+
+@keyframes drift-three {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-12vmax, -6vmax, 0) scale(1.12);
+  }
+}
+
+@keyframes breathe {
+  from {
+    transform: scale(0.94);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. Page layout
+   -------------------------------------------------------------------------- */
+.page {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+/* --------------------------------------------------------------------------
+   5. Header: logo and display controls
+   -------------------------------------------------------------------------- */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: clamp(1.1rem, 3vw, 2.25rem) clamp(1.25rem, 4vw, 3.5rem);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.brand__mark {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: none;
+}
+
+.brand__name {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  /* The trailing letter-spacing would make the word look off-centre. */
+  margin-right: -0.34em;
+}
+
+.site-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow);
+}
+
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+
+.icon-button:hover {
+  background: var(--hover-fill);
+  color: var(--text);
+}
+
+.icon-button:active {
+  transform: scale(0.92);
+}
+
+.icon-button:focus-visible {
+  outline-offset: 1px;
+}
+
+.icon {
+  grid-area: 1 / 1;
+  width: 1.25rem;
+  height: 1.25rem;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.icon-button:hover .icon {
+  transform: rotate(14deg);
+}
+
+/* Show only the icon that matches the current state. */
+:root[data-theme="dark"] .icon--moon,
+:root[data-theme="light"] .icon--sun,
+.icon-button[data-state="enter"] .icon--exit,
+.icon-button[data-state="exit"] .icon--enter {
+  display: none;
+}
+
+/* The icon that has just appeared turns in, so the click feels answered. */
+.icon--sun,
+.icon--moon,
+.icon--enter,
+.icon--exit {
+  animation: icon-turn 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes icon-turn {
+  from {
+    opacity: 0;
+    transform: rotate(-70deg) scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. Hero: star, greeting, clock, date, subtitle
+   -------------------------------------------------------------------------- */
+.hero {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  /* Nudge the stack slightly above true centre; it reads as balanced. */
+  padding: 0 1.25rem clamp(1.5rem, 8vh, 5rem);
+}
+
+/* The tiny glowing star. Its colour follows the time of day. */
+.hero__star {
+  --star-color: var(--star-day);
+  color: var(--star-color);
+  margin-bottom: 1.1rem;
+  line-height: 0;
+}
+
+body[data-period="morning"] .hero__star {
+  --star-color: var(--star-morning);
+}
+body[data-period="evening"] .hero__star {
+  --star-color: var(--star-evening);
+}
+
+.star {
+  width: 1.25rem;
+  height: 1.25rem;
+  overflow: visible;
+  filter: drop-shadow(0 0 6px var(--star-color)) drop-shadow(0 0 18px var(--star-color));
+  animation: twinkle 5.5s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(0.82) rotate(12deg);
+  }
+}
+
+.hero__greeting {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.6vw, 2.15rem);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+/* The clock is the centrepiece. It scales with both width and height so it
+   stays large on phones without overflowing short laptop screens. */
+.hero__clock {
+  margin: clamp(0.4rem, 2vh, 1.1rem) 0 clamp(0.6rem, 2.4vh, 1.4rem);
+  font-size: clamp(5.5rem, min(29vw, 34vh), 21rem);
+}
+
+.clock {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1em;
+  font-weight: 200;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums lining-nums;
+  /* The digits are shorter than their line box; this pulls the empty space in. */
+  margin-block: -0.13em;
+  filter: drop-shadow(0 0 0.2em var(--clock-glow));
+}
+
+.clock__digits {
+  display: inline-block;
+  padding: 0.04em 0.02em;
+  background: linear-gradient(180deg, var(--clock-top) 35%, var(--clock-bottom) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* The colon is two glowing dots, so it lines up with the digits on every
+   device regardless of the system font. */
+.clock__colon {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2em;
+  width: 0.24em;
+  margin: 0 0.02em;
+  transform: translateY(-0.04em);
+  animation: colon-pulse 2s ease-in-out infinite;
+}
+
+.clock__colon::before,
+.clock__colon::after {
+  content: "";
+  width: 0.072em;
+  height: 0.072em;
+  border-radius: 50%;
+  background: var(--warm);
+  box-shadow: 0 0 0.2em 0.02em rgba(var(--warm-rgb), 0.65);
+}
+
+@keyframes colon-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.date {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.7rem 1.5rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow);
+  font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.date__weekday {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.date__divider {
+  width: 1px;
+  height: 1em;
+  background: var(--line);
+}
+
+.date__day-month {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.hero__subtitle {
+  margin: clamp(1.1rem, 3.4vh, 2rem) 0 0;
+  max-width: 28ch;
+  font-size: clamp(1.05rem, 1.7vw, 1.35rem);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+/* --------------------------------------------------------------------------
+   7. Entrance
+   One orchestrated sequence: the light arrives first, then the star, the
+   greeting, the clock coming into focus, the date, and finally the controls.
+   -------------------------------------------------------------------------- */
+.background {
+  animation: background-in 2.6s ease both;
+}
+
+@keyframes background-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* "backwards" (not "both") on purpose: once the animation ends the element
+   returns to its normal style, so no leftover filter can interfere with the
+   glass blur on the date pill and the navigation. */
+.reveal {
+  animation: reveal 1.3s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: calc(var(--reveal-order, 0) * 150ms + 300ms);
+}
+
+.hero__clock.reveal {
+  animation-duration: 1.8s;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+    filter: blur(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 40rem) {
+  .background__ring--outer {
+    display: none;
+  }
+
+  .background__ring--inner {
+    width: 88vw;
+    height: 88vw;
+  }
+
+  .background__orbs::before,
+  .background__orbs::after {
+    filter: blur(24px);
+  }
+
+  .hero {
+    padding-bottom: 5.5rem;
+  }
+
+  .date {
+    gap: 0.8rem;
+    padding: 0.65rem 1.25rem;
+  }
+}
+
+/* Short landscape screens (phones on their side): tighten the stack. */
+@media (max-height: 30rem) {
+  .hero__star {
+    display: none;
+  }
+
+  .hero__subtitle {
+    margin-top: 0.75rem;
+  }
+}
+
+/* The theme change fades the whole page instead of snapping. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.7s;
+  animation-timing-function: ease;
+}
+
+/* --------------------------------------------------------------------------
+   9. Reduced motion
+   Everything still looks finished; it just stands still.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .background,
+  .reveal,
+  .background__orbs::before,
+  .background__orbs::after,
+  .star,
+  .clock__colon,
+  .icon--sun,
+  .icon--moon,
+  .icon--enter,
+  .icon--exit {
+    animation: none !important;
+  }
+
+  .is-ready .background__orbs::before,
+  .is-ready .background__orbs::after,
+  .icon-button,
+  .icon {
+    transition: none !important;
+  }
+
+  .icon-button:hover .icon {
+    transform: none;
+  }
+}
